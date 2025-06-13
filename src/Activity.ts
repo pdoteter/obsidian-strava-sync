@@ -1,3 +1,5 @@
+import {Gear} from "./Gear";
+
 export interface Activity {
   id: number;
   start_date: Date;
@@ -5,6 +7,7 @@ export interface Activity {
   sport_type: string;
   description: string;
   private_note: string;
+  gear: Gear;
   elapsed_time: number;
   moving_time: number;
   distance: number;
@@ -18,3 +21,4 @@ export interface Activity {
 
   [propName: string]: any;
 }
+

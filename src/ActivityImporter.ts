@@ -1,4 +1,5 @@
 import type { Activity } from "./Activity";
+import type { Gear } from "./Gear";
 import type { StravaApi } from "./StravaApi";
 
 // The default “non-upload” rate limit allows 100 requests every 15 minutes, with up to 1,000 requests per day.
@@ -51,6 +52,7 @@ export class ActivityImporter {
       sport_type: stravaActivity.sport_type,
       description: stravaActivity.description || "",
       private_note: stravaActivity.private_note || "",
+      gear: mapGear(stravaActivity.gear),
       elapsed_time: stravaActivity.elapsed_time,
       moving_time: stravaActivity.moving_time,
       distance: stravaActivity.distance,
@@ -63,4 +65,12 @@ export class ActivityImporter {
       calories: stravaActivity.calories || 0,
     };
   }
+
+  private mapGear(gear: any): Gear {
+    return {
+      id: gear.id || "",
+      name: gear.name  || ""
+    }
+  }
 }
+

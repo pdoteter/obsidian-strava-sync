@@ -83,11 +83,13 @@ export class ActivityRenderer {
       case "workout":
         return "🏋️";
       case "ebikeride":
-      case "ride":
-      case "gravelride":
       case "velomobile":
-      case "virtualride":
+      case "ride":
         return "🚴";
+      case "gravelride":
+        return "G🚴";
+      case "virtualride":
+        return "I🚴";
       case "elliptical":
       case "stairstepper":
       case "walk":

@@ -10,6 +10,7 @@ const REQUIRED_COLUMNS = [
   "Activity Type",
   "Activity Description",
   "Activity Private Note",
+  "Activity Gear",
   "Elapsed Time",
   "Moving Time",
   "Distance",
@@ -81,6 +82,7 @@ export class ActivitiesCSVImporter {
         sport_type: record["Activity Type"],
         description: record["Activity Description"],
         private_note: record["Activity Private Note"],
+        gear: record["Activity Gear"],
         elapsed_time: Number.parseFloat(record["Elapsed Time"]), // s
         moving_time: Number.parseFloat(record["Moving Time"]), // s
         distance: Number.parseFloat(record["Distance"]), // m
