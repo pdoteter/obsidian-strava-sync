@@ -1,3 +1,4 @@
+import { Notice } from "obsidian";
 import type { Activity } from "./Activity";
 import type { Gear } from "./Gear";
 import type { StravaApi } from "./StravaApi";
@@ -27,6 +28,10 @@ export class ActivityImporter {
       }
 
       const activities = await this.stravaApi.listActivities(params);
+      new Notice(
+        ` ✅ Successfully retrieved ${activities.length} activies from Strava!`,
+        4000,
+      );
 
       const detailedActivities = await Promise.all(
         activities.map(async (activity: any) => {
@@ -45,6 +50,7 @@ export class ActivityImporter {
   }
 
   private mapStravaActivityToActivity(stravaActivity: any): Activity {
+    console.info( "activity id ", stravaActivity.id)
     return {
       id: stravaActivity.id,
       start_date: new Date(stravaActivity.start_date),
@@ -52,7 +58,7 @@ export class ActivityImporter {
       sport_type: stravaActivity.sport_type,
       description: stravaActivity.description || "",
       private_note: stravaActivity.private_note || "",
-      gear: mapGear(stravaActivity.gear),
+      gear: this.mapGear(stravaActivity.gear),
       elapsed_time: stravaActivity.elapsed_time,
       moving_time: stravaActivity.moving_time,
       distance: stravaActivity.distance,
