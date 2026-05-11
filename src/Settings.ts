@@ -27,6 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
     stravaAccessToken: undefined,
     stravaRefreshToken: undefined,
     stravaTokenExpiresAt: undefined,
+    stravaOAuthState: undefined,
   },
   sync: {
     folder: "Strava/{{start_date}}",
@@ -57,6 +58,7 @@ export interface AuthenticationSettings {
   stravaAccessToken?: string;
   stravaRefreshToken?: string;
   stravaTokenExpiresAt?: number;
+  stravaOAuthState?: string;
 }
 
 interface SyncSettings {

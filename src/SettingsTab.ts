@@ -70,7 +70,7 @@ export class SettingsTab extends PluginSettingTab {
       .setDesc("Click to start the OAuth flow with Strava")
       .setClass("strava-sync-authenticate")
       .addButton((button) => {
-        button.onClick(() => {
+        button.onClick(async () => {
           if (
             !this.plugin.settings.authentication.stravaClientId ||
             !this.plugin.settings.authentication.stravaClientSecret
@@ -82,7 +82,9 @@ export class SettingsTab extends PluginSettingTab {
             return;
           }
 
-          window.open(this.plugin.stravaApi.buildAuthorizeUrl(), "_blank");
+          const authorizeUrl = this.plugin.stravaApi.buildAuthorizeUrl();
+          await this.plugin.saveSettings();
+          window.open(authorizeUrl, "_blank");
         });
       });
 
