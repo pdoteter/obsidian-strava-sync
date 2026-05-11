@@ -1,4 +1,5 @@
 import { type App, Notice, PluginSettingTab, Setting } from "obsidian";
+import { Logger } from "./Logger";
 import { DEFAULT_SETTINGS, VALID_FRONT_MATTER_PROPERTIES } from "./Settings";
 import type StravaSync from "./StravaSync";
 
@@ -200,7 +201,7 @@ export class SettingsTab extends PluginSettingTab {
                 4000,
               );
             } catch (error) {
-              console.error("Error importing Strava bulk export:", error);
+              Logger.error("Error importing Strava bulk export:", error);
               new Notice(
                 "Error importing Strava bulk export. Check the console for details.",
                 8000,
