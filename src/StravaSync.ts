@@ -150,15 +150,19 @@ export default class StravaSync extends Plugin {
     let createdCount = 0;
     let updatedCount = 0;
 
-    await Promise.all(
-      this.activities.map(async (activity) => {
-        if (await this.activitySerializer.serialize(activity)) {
-          createdCount++;
-        } else {
-          updatedCount++;
-        }
-      }),
-    );
+    const CONCURRENCY_LIMIT = 5;
+    for (let i = 0; i < this.activities.length; i += CONCURRENCY_LIMIT) {
+      const chunk = this.activities.slice(i, i + CONCURRENCY_LIMIT);
+      await Promise.all(
+        chunk.map(async (activity) => {
+          if (await this.activitySerializer.serialize(activity)) {
+            createdCount++;
+          } else {
+            updatedCount++;
+          }
+        }),
+      );
+    }
 
     let message = `🏃 ${createdCount} ${newLabel ? "new " : ""}activities created`;
 
