@@ -153,4 +153,37 @@ describe("StravaSync", () => {
       expect.any(Number),
     );
   });
+
+  test("Protocol handler validates state", async () => {
+    const protocolHandler = (plugin.registerObsidianProtocolHandler as jest.Mock)
+      .mock.calls[0][1];
+
+    // Set an expected state in settings
+    plugin.settings.authentication.stravaOAuthState = "valid-state";
+
+    // Call with invalid state
+    await protocolHandler({ code: "some-code", state: "invalid-state" });
+
+    expect(Notice).toHaveBeenCalledWith(
+      expect.stringContaining("invalid state parameter"),
+      expect.any(Number),
+    );
+    expect(plugin.stravaApi.exchangeCodeForToken).not.toHaveBeenCalled();
+
+    // Call with no state expected
+    plugin.settings.authentication.stravaOAuthState = undefined;
+    await protocolHandler({ code: "some-code", state: "any-state" });
+    expect(Notice).toHaveBeenCalledWith(
+      expect.stringContaining("invalid state parameter"),
+      expect.any(Number),
+    );
+
+    // Call with valid state
+    await protocolHandler({ code: "some-code", state: "valid-state" });
+
+    expect(plugin.stravaApi.exchangeCodeForToken).toHaveBeenCalledWith(
+      "some-code",
+    );
+    expect(plugin.settings.authentication.stravaOAuthState).toBeUndefined();
+  });
 });
