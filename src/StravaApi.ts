@@ -20,12 +20,16 @@ export class StravaApi {
   }
 
   buildAuthorizeUrl(): string {
+    const state = crypto.randomUUID();
+    this.settings.stravaOAuthState = state;
+
     const params = new URLSearchParams({
       client_id: this.settings.stravaClientId,
       redirect_uri: this.REDIRECT_URI,
       response_type: "code",
       scope: this.SCOPES,
       approval_prompt: "force",
+      state: state,
     });
 
     return `https://www.strava.com/oauth/authorize?${params.toString()}`;

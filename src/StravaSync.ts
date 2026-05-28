@@ -42,6 +42,20 @@ export default class StravaSync extends Plugin {
     );
 
     this.registerObsidianProtocolHandler("strava-sync", async (args) => {
+      if (
+        !this.settings.authentication.stravaOAuthState ||
+        args.state !== this.settings.authentication.stravaOAuthState
+      ) {
+        new Notice(
+          "🛑 Strava authentication failed: invalid state parameter.",
+          ERROR_NOTICE_DURATION,
+        );
+        return;
+      }
+
+      this.settings.authentication.stravaOAuthState = undefined;
+      await this.saveSettings();
+
       await this.stravaApi.exchangeCodeForToken(args.code);
       this.settings.authentication = this.stravaApi.settings;
       await this.saveSettings();

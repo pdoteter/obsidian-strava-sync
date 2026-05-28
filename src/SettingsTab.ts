@@ -82,7 +82,9 @@ export class SettingsTab extends PluginSettingTab {
             return;
           }
 
-          window.open(this.plugin.stravaApi.buildAuthorizeUrl(), "_blank");
+          const url = this.plugin.stravaApi.buildAuthorizeUrl();
+          this.plugin.saveSettings();
+          window.open(url, "_blank");
         });
       });
 
