@@ -1,5 +1,6 @@
 import { Notice, Plugin, addIcon } from "obsidian";
 import { ActivitiesCSVImporter, CSVImportError } from "./ActivitiesCSVImporter";
+import { Logger } from "./Logger";
 import type { Activity } from "./Activity";
 import { ActivityImporter } from "./ActivityImporter";
 import { ActivitySerializer } from "./ActivitySerializer";
@@ -103,7 +104,7 @@ export default class StravaSync extends Plugin {
           ERROR_NOTICE_DURATION,
         );
       } else {
-        console.error("Unexpected error during CSV import:", error);
+        Logger.error("Unexpected error during CSV import:", error);
         new Notice(
           "🛑 An unexpected error occurred during import. Check the console for details.",
           ERROR_NOTICE_DURATION,
@@ -144,7 +145,7 @@ export default class StravaSync extends Plugin {
 
       await this.saveSettings();
     } catch (error) {
-      console.error("Unexpected error during Strava import:", error);
+      Logger.error("Unexpected error during Strava import:", error);
       new Notice(
         "🛑 An unexpected error occurred during import. Check the console for details.",
         ERROR_NOTICE_DURATION,
@@ -164,15 +165,19 @@ export default class StravaSync extends Plugin {
     let createdCount = 0;
     let updatedCount = 0;
 
-    await Promise.all(
-      this.activities.map(async (activity) => {
-        if (await this.activitySerializer.serialize(activity)) {
-          createdCount++;
-        } else {
-          updatedCount++;
-        }
-      }),
-    );
+    const CONCURRENCY_LIMIT = 5;
+    for (let i = 0; i < this.activities.length; i += CONCURRENCY_LIMIT) {
+      const chunk = this.activities.slice(i, i + CONCURRENCY_LIMIT);
+      await Promise.all(
+        chunk.map(async (activity) => {
+          if (await this.activitySerializer.serialize(activity)) {
+            createdCount++;
+          } else {
+            updatedCount++;
+          }
+        }),
+      );
+    }
 
     let message = `🏃 ${createdCount} ${newLabel ? "new " : ""}activities created`;
 

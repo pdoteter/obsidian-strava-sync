@@ -1,4 +1,5 @@
 import type { Activity } from "./Activity";
+import { Logger } from "./Logger";
 import type { StravaApi } from "./StravaApi";
 
 // The default “non-upload” rate limit allows 100 requests every 15 minutes, with up to 1,000 requests per day.
@@ -27,18 +28,24 @@ export class ActivityImporter {
 
       const activities = await this.stravaApi.listActivities(params);
 
-      const detailedActivities = await Promise.all(
-        activities.map(async (activity: any) => {
-          const detailedActivity = await this.stravaApi.getActivity(
-            activity.id,
-          );
-          return this.mapStravaActivityToActivity(detailedActivity);
-        }),
-      );
+      const detailedActivities: Activity[] = [];
+      const CONCURRENCY_LIMIT = 5;
+      for (let i = 0; i < activities.length; i += CONCURRENCY_LIMIT) {
+        const chunk = activities.slice(i, i + CONCURRENCY_LIMIT);
+        const results = await Promise.all(
+          chunk.map(async (activity: any) => {
+            const detailedActivity = await this.stravaApi.getActivity(
+              activity.id,
+            );
+            return this.mapStravaActivityToActivity(detailedActivity);
+          }),
+        );
+        detailedActivities.push(...results);
+      }
 
       return detailedActivities;
     } catch (error) {
-      console.error("Error fetching activities from Strava:", error);
+      Logger.error("Error fetching activities from Strava:", error);
       throw new Error("Failed to import activities from Strava");
     }
   }
