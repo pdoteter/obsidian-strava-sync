@@ -48,7 +48,7 @@ export default class StravaSync extends Plugin {
         args.state !== this.settings.authentication.stravaOAuthState
       ) {
         new Notice(
-          "🛑 Strava authentication failed: invalid state parameter.",
+          "🛑 Strava authentication failed: Invalid state parameter. Please try again.",
           ERROR_NOTICE_DURATION,
         );
         return;
